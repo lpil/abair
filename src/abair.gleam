@@ -30,42 +30,18 @@ pub type AbairError {
 
 /// Create a request to abair.ie
 pub fn synthesis_request(content: String) -> Request(String) {
-  let payload =
-    json.object([
-      #(
-        "synthinput",
-        json.object([
-          #("text", json.string(content)),
-          #("ssml", json.string("string")),
-        ]),
-      ),
-      #(
-        "voiceparams",
-        json.object([
-          #("languageCode", json.string("ga-IE")),
-          #("name", json.string("ga_MU_cmg_piper")),
-          #("ssmlGender", json.string("UNSPECIFIED")),
-        ]),
-      ),
-      #(
-        "audioconfig",
-        json.object([
-          #("audioEncoding", json.string("LINEAR16")),
-          #("speakingRate", json.int(1)),
-          #("volumeGainDb", json.int(1)),
-          #("htsParams", json.string("string")),
-          #("sampleRateHertz", json.int(0)),
-          #("effectsProfileId", json.preprocessed_array([])),
-        ]),
-      ),
-      #("outputType", json.string("JSON")),
-    ])
+  let query = [
+    #("input", content),
+    #("voice", "ga_MU_cmg_piper"),
+    #("normalise", "true"),
+  ]
+
   request.new()
-  |> request.set_method(http.Post)
-  |> request.set_host("api.abair.ie")
-  |> request.set_path("/v3/synthesis")
+  |> request.set_method(http.Get)
+  |> request.set_query(query)
+  |> request.set_host("synthesis.abair.ie")
+  |> request.set_path("/api/synthesise")
   |> request.prepend_header("content-type", "application/json")
-  |> request.set_body(json.to_string(payload))
 }
 
 /// Parse a synthesis response from abair.ie
